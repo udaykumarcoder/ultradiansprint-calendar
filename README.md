@@ -62,6 +62,29 @@ This project is built with .
 
 ## How can I deploy this project?
 
+Click the "Export to Github" button in Lovable to get your code
+
+On your local machine:
+
+Clone your repository
+Run npm install to install dependencies
+Run npx cap add android to add Android platform
+Run npm run build to build your web app
+Run npx cap sync to sync your web code to Android
+To open in Android Studio and prepare for Play Store:
+
+Run npx cap open android
+In Android Studio, you'll need to:
+Generate a signed APK/Bundle
+Create your app listing
+Follow Google Play's publishing guidelines
+Important requirements for Play Store publishing:
+
+You need a Google Play Developer account ($25 one-time fee)
+Your app must meet Play Store guidelines
+You'll need to provide privacy policy, app screenshots, and store listing details
+You'll need to create app signing keys
+
 Simply open [Lovable](https://lovable.dev/projects/929a117e-d83f-463f-bb7c-4c1998dc156c) and click on Share -> Publish.
 
 ## I want to use a custom domain - is that possible?
