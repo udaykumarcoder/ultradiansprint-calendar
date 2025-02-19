@@ -16,12 +16,29 @@ interface AlarmDialogProps {
   setAlarms: (alarms: AlarmData) => void;
 }
 
+// Create audio element once
+const alarmSound = new Audio('/alarm-sound.mp3');
+alarmSound.loop = true;
+
 const AlarmDialog = ({ date, alarms, setAlarms }: AlarmDialogProps) => {
   const [open, setOpen] = useState(false);
   const [time, setTime] = useState('');
   const [note, setNote] = useState('');
   const { toast } = useToast();
   const dateStr = format(date, 'yyyy-MM-dd');
+
+  // Load alarms from localStorage on component mount
+  useEffect(() => {
+    const savedAlarms = localStorage.getItem('calendar-alarms');
+    if (savedAlarms) {
+      setAlarms(JSON.parse(savedAlarms));
+    }
+  }, []);
+
+  // Save alarms to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('calendar-alarms', JSON.stringify(alarms));
+  }, [alarms]);
 
   useEffect(() => {
     // Check for alarms every minute
@@ -33,9 +50,8 @@ const AlarmDialog = ({ date, alarms, setAlarms }: AlarmDialogProps) => {
       Object.entries(alarms).forEach(([alarmDate, alarmsList]) => {
         alarmsList.forEach(alarm => {
           if (alarmDate === currentDate && alarm.time === currentTime) {
-            // Play notification sound
-            const audio = new Audio('/notification.mp3');
-            audio.play();
+            // Play alarm sound
+            alarmSound.play();
             
             // Show notification
             if ('Notification' in window && Notification.permission === 'granted') {
@@ -45,16 +61,30 @@ const AlarmDialog = ({ date, alarms, setAlarms }: AlarmDialogProps) => {
               });
             }
             
+            // Show toast with a button to stop the alarm
             toast({
               title: "Alarm!",
-              description: alarm.note || "Your alarm is ringing!",
+              description: (
+                <div className="flex flex-col gap-2">
+                  <p>{alarm.note || "Your alarm is ringing!"}</p>
+                  <Button 
+                    variant="secondary" 
+                    onClick={() => alarmSound.pause()}
+                  >
+                    Stop Alarm
+                  </Button>
+                </div>
+              ),
             });
           }
         });
       });
     }, 60000); // Check every minute
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      alarmSound.pause();
+    };
   }, [alarms, toast]);
 
   useEffect(() => {
