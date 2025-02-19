@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameDay } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import Notes from './Notes';
 import AlarmDialog from './AlarmDialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 
 export type NoteData = {
   [date: string]: string[];
@@ -37,6 +39,12 @@ const Calendar = () => {
     setSelectedDate(date);
   };
 
+  const handleGoToDate = (date: Date | undefined) => {
+    if (date) {
+      setCurrentDate(date);
+    }
+  };
+
   const hasNote = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     return notes[dateStr]?.length > 0;
@@ -59,9 +67,28 @@ const Calendar = () => {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-2xl font-medium">
-            {format(currentDate, 'MMMM yyyy')}
-          </h2>
+          
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-medium">
+              {format(currentDate, 'MMMM yyyy')}
+            </h2>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="center">
+                <CalendarPicker
+                  mode="single"
+                  selected={currentDate}
+                  onSelect={handleGoToDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <Button
             variant="ghost"
             size="icon"
