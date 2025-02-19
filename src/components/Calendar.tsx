@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameDay } from 'date-fns';
 import { Card } from '@/components/ui/card';
@@ -14,7 +13,10 @@ export type NoteData = {
 };
 
 export type AlarmData = {
-  [date: string]: string[];
+  [date: string]: {
+    time: string;
+    note: string;
+  }[];
 };
 
 const Calendar = () => {
